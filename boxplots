@@ -1,0 +1,14 @@
+library(ggplot2)
+
+#load the data in tab-delimited format
+Bs11_abund<-read.table(file.choose(), header=TRUE, sep="\t")
+#This is a table with the sample names in the first column, abunance of BS11 OTU in the second column and then factors following the abundances.
+#For instance, Date of sampling, treatment and Cause of death
+#Establish the factor you want to color by
+COD<-Bs11_abund$COD
+#make the boxplot using qplot
+qplot(COD, abundance, data=Bs11_abund, geom=c("boxplot", "jitter", "line"), fill=COD, xlab="Moose Location/Cause of Death", ylab="BS11 Relative Abundance")
+#Make the boxplot using ggplot function
+1<-ggplot(Bs11_abund_ALL, aes(x=treatment, y=abundance))+geom_boxplot()+geom_point()
+1<-1+theme_bw()
+1
