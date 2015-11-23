@@ -62,3 +62,37 @@ p<-p+coord_fixed()+geom_segment(data=fit.scrs,aes(x=0,xend=NMDS1,y=0,yend=NMDS2)
 #Now let's add text to the vectors so we can identify which one is which, and also add the names of the sample points. the label here is an established vector of the sample names that I identified above.
 p<-p+geom_text(data=fit.scrs,aes(x=NMDS1,y=NMDS2),label=Species, size=3.5)+geom_text(data=ord.scrs, aes(x=NMDS1, y=NMDS2), label=rownames(CHEM), size=5)
 p
+#test for significance
+
+mrpp(BIO, Treatment, permutations=999, distance="euclidean", strata=NULL)
+
+#Script below can be used for the NMDS without loadings
+#This was used for Supplementary Fig 3
+library(ggplot2)
+library(vegan)
+library(grid)
+library(MASS)
+library(RColorBrewer)
+CHEM<-read.table(file.choose(), header=TRUE, sep="\t", check.names=TRUE)
+BIO<-read.table(file.choose(), header=TRUE, sep="\t", check.names=TRUE)
+rownames(BIO)<-BIO[,1]
+BIO<-BIO[,-1]
+rownames(CHEM)<-CHEM[,1]
+CHEM<-CHEM[,-1]
+Type<-CHEM$Type
+Treatment<-CHEM$Treatment
+Moose<-CHEM$Moose
+
+Bray<-metaMDSdist(BIO, distance = "bray", autotransform = FALSE, noshare = 0.1, trace = 1)
+ord<-metaMDS(BIO, autotransform=FALSE)
+
+p<-ggplot(ord.scrs)+geom_point(mapping = aes(x = NMDS1, y = NMDS2, color=Treatment, size =10))+theme_bw()
+p
+ord.scrs<-as.data.frame(scores(ord),display="sites")
+
+mrpp(BIO, Type, permutations=999, distance="euclidean", strata=NULL)
+mrpp(BIO, Treatment, permutations=999, distance="euclidean", strata=NULL)
+#To test individual significant groups (with week 1 spring diet) I changed each individual day to "Spring" for treatment
+#And then ran mrpp with Treatment.
+#If the spring group was still significant, then the sample was more similar to spring than any other treatment.
+#I repeated this with all treatments.
